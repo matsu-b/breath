@@ -41,10 +41,11 @@ class _TopPageState extends State<TopPage> {
                       docs[index].data() as Map<String, dynamic>;
 
                   final Memo fetchMemo = Memo(
-                      title: data['title'],
-                      detail: data['detail'],
-                      createdDate: data['createdDate'] ?? Timestamp.now(),
-                      updateDate: data['updateDate']);
+                    id: docs[index].id,
+                    title: data['title'],
+                    detail: data['detail'],
+                    createdDate: data['createdDate'] ?? Timestamp.now(),
+                    updateDate: data['updateDate']);
 
                   return ListTile(
                     title: Text(fetchMemo.title),
@@ -53,24 +54,20 @@ class _TopPageState extends State<TopPage> {
                           showModalBottomSheet(
                               context: context,
                               builder: (context) {
-                                return const SafeArea(
+                                return SafeArea(
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       ListTile(
-                                        // onTap: () {
-                                        //   Navigator.push(
-                                        //       context,
-                                        //       MaterialPageRoute(
-                                        //           builder: (context) =>
-                                        //               AddEditMemoPage(
-                                        //                   currentMemo:
-                                        //                       fetchMemo)));
-                                        // },
-                                        leading: Icon(Icons.edit),
-                                        title: Text('編集'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          Navigator.push(context, MaterialPageRoute(
+                                            builder: (context) => AddEditMemoPage(currentMemo: fetchMemo)));
+                                        },
+                                        leading: const Icon(Icons.edit),
+                                        title: const Text('編集'),
                                       ),
-                                      ListTile(
+                                      const ListTile(
                                         leading: Icon(Icons.delete),
                                         title: Text('削除'),
                                       ),
