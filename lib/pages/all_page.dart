@@ -42,7 +42,7 @@ class _AllPageState extends State<AllPage> {
     return Scaffold(
       //Scaffoldは画面の基本となるウィジェット
       appBar: AppBar(//AppBarは画面上部のバーを作成するウィジェット
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFF2F2F2),
         title: Text(widget.title),
         automaticallyImplyLeading: false, //戻るボタンを非表示にする
       ),

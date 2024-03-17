@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:test3_app/firebase_options.dart';
 import 'package:test3_app/pages/all_page.dart';
 import 'package:test3_app/pages/home_page.dart';
+import 'package:test3_app/pages/journals/feelings_journal.dart';
+import 'package:test3_app/pages/journals/free_journal.dart';
+import 'package:test3_app/pages/journals/precious_journal.dart';
+import 'package:test3_app/pages/journals/words_journal.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +31,10 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => const HomePage(),
         '/journey': (context) => const AllPage(title: 'Allpage',),
+        '/feelingjournal': (context) => const FeelingJournal(),
+        '/wordsjournal': (context) => const WordsJournal(),
+        '/preciousjournal': (context) => const PreciousJournal(),
+        '/freejournal': (context) => const FreeJournal(),
       },
     );
   }
@@ -41,6 +49,7 @@ class CustomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      backgroundColor: Color(0xFFF2F2F2),
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
@@ -52,7 +61,7 @@ class CustomNavigationBar extends StatelessWidget {
         ),
       ],
       currentIndex: selectedIndex,
-      selectedItemColor: Colors.amber[800],
+      selectedItemColor: Colors.black,
       onTap: onItemTapped,
     );
   }
