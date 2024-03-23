@@ -3,41 +3,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:test3_app/model/memo.dart';
 
-class WordsJournal extends StatefulWidget {
-  final Word? currentMemo;
-  const WordsJournal({super.key, this.currentMemo});
+class ValueJournal extends StatefulWidget {
+  final Value? currentMemo;
+  const ValueJournal({super.key, this.currentMemo});
 
   @override
-  State<WordsJournal> createState() => _WordsJournalState();
+  State<ValueJournal> createState() => _ValueJournalState();
 }
 
-class _WordsJournalState extends State<WordsJournal> {
-  TextEditingController wordController =
+class _ValueJournalState extends State<ValueJournal> {
+  TextEditingController valueContentController =
       TextEditingController(); //入力された情報を管理するために必要
-  TextEditingController wordReasonController =
+  TextEditingController valueReasonController =
       TextEditingController(); //入力された情報を管理するために必要
-  TextEditingController wordTypeController =
+  TextEditingController valueSubjectController =
       TextEditingController(); //入力された情報を管理するために必要
 
   Future<void> createMemo() async {
     final memoCollection =
-        FirebaseFirestore.instance.collection('word_journals');
+        FirebaseFirestore.instance.collection('value_journals');
     await memoCollection.add({
-      'word': wordController.text,
-      'wordReason': wordReasonController.text,
-      'wordType': wordTypeController.text,
+      'valueContent': valueContentController.text,
+      'valueReason': valueReasonController.text,
+      'valueSubject': valueSubjectController.text,
       'createdDate': Timestamp.now()
     });
   }
 
   Future<void> updateMemo() async {
     final doc = FirebaseFirestore.instance
-        .collection('word_journals')
+        .collection('value_journals')
         .doc(widget.currentMemo!.id);
     await doc.update({
-      'word': wordController.text,
-      'wordReason': wordReasonController.text,
-      'wordType': wordTypeController.text,
+      'valueContent': valueContentController.text,
+      'valueReason': valueReasonController.text,
+      'valueSubject': valueSubjectController.text,
       'createdDate': Timestamp.now()
     });
   }
@@ -46,29 +46,36 @@ class _WordsJournalState extends State<WordsJournal> {
   void initState() {
     super.initState();
     if (widget.currentMemo != null) {
-      wordController.text = widget.currentMemo!.word;
-      wordReasonController.text = widget.currentMemo!.wordReason;
-      wordTypeController.text = widget.currentMemo!.wordType;
+      valueContentController.text = widget.currentMemo!.valueContent;
+      valueReasonController.text = widget.currentMemo!.valueReason;
+      valueSubjectController.text = widget.currentMemo!.valueSubject;
     }
   }
 
-  //プルダウンメニューと値をDBに受け渡すための処理ここから
   List<String> dropdownItems = [
-    '勇気づけられる',
-    '励まされる',
-    '困難を乗り越える',
-    '希望を与える',
-    '感動する',
-    '幸せを感じる',
-    '心温まる',
-    '癒やしてくれる',
-    '悲しみを和らげる',
-    '不安を和らげる',
-    '座右の銘',
+    '自分',
+    '生活',
+    '友達',
+    '家族',
+    'ペット',
+    '仕事',
+    '勉強',
+    'お金',
+    '恋愛',
+    '家事',
+    '健康',
+    '転職/就職',
+    '食',
+    '本',
+    '音楽',
+    '旅行',
+    '美容',
+    'スポーツ',
+    'お酒',
+    '学校',
     'その他',
   ];
   String? selectedDropdownItem;
-  //プルダウンメニューと値をDBに受け渡すための処理ここまで
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +83,7 @@ class _WordsJournalState extends State<WordsJournal> {
       appBar: AppBar(
         // title: Text(widget.currentMemo == null ? 'メモ追加' : 'メモ編集')
         backgroundColor: Color(0xFFF2F2F2),
-        title: const Text('言葉\nwords'),
+        title: const Text('大切なこと\nprecious'),
       ),
       body: Container(
         color: Color(0xFFF2F2F2), // 背景色を設定
@@ -86,14 +93,14 @@ class _WordsJournalState extends State<WordsJournal> {
             children: [
               const SizedBox(height: 40),
               //セクション1️⃣ここから
-              const Text('印象に残ったことばを書いてください。',
+              const Text('自分にとって大切なことはなんですか？',
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               Container(
                   width: MediaQuery.of(context).size.width * 0.8, //幅を80%にする
                   child: TextField(
-                    controller: wordController,
+                    controller: valueContentController,
                     maxLines: null, // Enable multiline input
                     decoration: const InputDecoration(
                         border: InputBorder.none,
@@ -105,14 +112,14 @@ class _WordsJournalState extends State<WordsJournal> {
               const SizedBox(height: 60),
 
               //セクション2️⃣ここから
-              const Text('なぜ、その言葉が印象に残ったのですか？',
+              const Text('なぜ自分はそれを大切にしたいのですか？',
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               Container(
                   width: MediaQuery.of(context).size.width * 0.8, //幅を80%にする
                   child: TextField(
-                    controller: wordReasonController,
+                    controller: valueReasonController,
                     maxLines: null, // Enable multiline input
                     decoration: const InputDecoration(
                         border: InputBorder.none,
@@ -124,7 +131,7 @@ class _WordsJournalState extends State<WordsJournal> {
               const SizedBox(height: 60),
 
               //セクション3️⃣ここから
-              const Text('その言葉は自分にとってどんな言葉ですか？',
+              const Text('その内容は何と関係していますか？',
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
@@ -143,7 +150,7 @@ class _WordsJournalState extends State<WordsJournal> {
                   onChanged: (String? newValue) {
                     setState(() {
                       selectedDropdownItem = newValue;
-                      wordTypeController.text = newValue ?? '';
+                      valueSubjectController.text = newValue ?? '';
                     });
                   },
                 ),
