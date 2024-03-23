@@ -1,34 +1,94 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Memo {
-  // test用に追加
+class Free {
   String id;
-  String title;
-  String detail; 
   Timestamp createdDate;
   Timestamp? updateDate;
+  String freeTitle;
+  String freeContent; 
 
-  Memo({
+  Free({
+    // common
     required this.id,
-    required this.title,
-    required this.detail,
     required this.createdDate,
     this.updateDate,
+    required this.freeTitle,
+    required this.freeContent,
   });
 }
 
-// //Breath用に追加
-// class User {
-//   String username;
-//   String password;
+class Memo {
+  // common
+  String id;
+  Timestamp createdDate;
+  Timestamp? updateDate;
+  String detail;
+  String title;
+
+  Memo({
+    // common
+    required this.id,
+    required this.createdDate,
+    this.updateDate,
+    required this.detail,
+    required this.title,
     
-//   User({
-//     required this.username,
-//     required this.password,
+  });
+}
 
-//   });
-// }
+class Value {
+  String id;
+  Timestamp createdDate;
+  Timestamp? updateDate;
+  String valueContent;
+  String valueReason;
+  String valueSubject;
 
-// このように、モデルクラスを作成することで、データの構造を定義し、データの取得や保存を行う際に、型安全なコードを書くことができます。
-// また、このようにモデルクラスを作成することで、データの構造が変更された場合に、変更箇所を一箇所にまとめることができます。
-// これにより、データの構造が変更された場合に、変更箇所を一箇所にまとめることができます。
+  Value({    
+    required this.id,
+    required this.createdDate,
+    this.updateDate,
+    required this.valueContent,
+    required this.valueReason,
+    required this.valueSubject,
+    
+  });
+}
+
+class Word {
+  String id;
+  Timestamp createdDate;
+  Timestamp? updateDate;
+  String word;
+  String wordReason;
+  String wordType;
+
+  Word({    
+    required this.id,
+    required this.createdDate,
+    this.updateDate,
+    required this.word,
+    required this.wordReason,
+    required this.wordType,
+    
+  });
+}
+
+class Feel {
+  String id;
+  Timestamp createdDate;
+  Timestamp? updateDate;
+  String feelType;
+  String feelReason;
+  String feelAdvice;
+
+  Feel({    
+    required this.id,
+    required this.createdDate,
+    this.updateDate,
+    required this.feelType,
+    required this.feelReason,
+    required this.feelAdvice,
+    
+  });
+}

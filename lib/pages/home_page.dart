@@ -1,5 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:test3_app/main.dart';
@@ -146,7 +144,7 @@ class _HomePageState extends State<HomePage> {
             GestureDetector(
             onTap: () {
               // タップされたときの動作をここに書く
-              Navigator.pushNamed(context, '/preciousjournal');
+              Navigator.pushNamed(context, '/valuejournal');
             },
             child: Container(
               padding: EdgeInsets.all(10),
