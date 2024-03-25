@@ -17,25 +17,6 @@ class Free {
   });
 }
 
-class Memo {
-  // common
-  String id;
-  Timestamp createdDate;
-  Timestamp? updateDate;
-  String detail;
-  String title;
-
-  Memo({
-    // common
-    required this.id,
-    required this.createdDate,
-    this.updateDate,
-    required this.detail,
-    required this.title,
-    
-  });
-}
-
 class Value {
   String id;
   Timestamp createdDate;
