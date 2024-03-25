@@ -15,7 +15,6 @@ class AllPage extends StatefulWidget {
 
 class _AllPageState extends State<AllPage> {
   late StreamZip<QuerySnapshot> combinedStream;
-  late CollectionReference memoCollection;
   late CollectionReference freeJournalCollection;
   late CollectionReference valueJournalCollection;
   late CollectionReference wordJournalCollection;
@@ -25,7 +24,6 @@ class _AllPageState extends State<AllPage> {
   void initState() {
     super.initState();
 
-    memoCollection = FirebaseFirestore.instance.collection('memo');
     freeJournalCollection =
         FirebaseFirestore.instance.collection('free_journals');
     valueJournalCollection =
@@ -35,7 +33,6 @@ class _AllPageState extends State<AllPage> {
     feelJournalCollection =
         FirebaseFirestore.instance.collection('feel_journals');
     combinedStream = StreamZip<QuerySnapshot>([
-      memoCollection.snapshots(),
       freeJournalCollection.snapshots(),
       valueJournalCollection.snapshots(),
       wordJournalCollection.snapshots(),
@@ -69,7 +66,12 @@ class _AllPageState extends State<AllPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFFF2F2F2),
-        title: Text(widget.title),
+        title: const Text(
+          '過去のブレス😮‍💨一覧',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: Container(
         color: Color(0xFFF2F2F2), // 背景色を設定
@@ -83,61 +85,20 @@ class _AllPageState extends State<AllPage> {
               return const Center(child: Text('データがありません'));
             }
 
-            final memoDocs = snapshot.data![0].docs;
-            final freeJournalDocs = snapshot.data![1].docs;
-            final valueJournalDocs = snapshot.data![2].docs;
-            final wordJournalDocs = snapshot.data![3].docs;
-            final feelJournalDocs = snapshot.data![4].docs;
+            final freeJournalDocs = snapshot.data![0].docs;
+            final valueJournalDocs = snapshot.data![1].docs;
+            final wordJournalDocs = snapshot.data![2].docs;
+            final feelJournalDocs = snapshot.data![3].docs;
 
             return SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  // 📝 メモのセクションここから
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16.0),
-                    child: Text('メモ｜memo',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
-                  ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                      itemCount: memoDocs.length,
-                      itemBuilder: (context, index) {
-                        Map<String, dynamic> data =
-                            memoDocs[index].data() as Map<String, dynamic>;
-
-                        final Memo fetchMemo = Memo(
-                          // common
-                          id: memoDocs[index].id,
-                          title: data['title'],
-                          detail: data['detail'],
-                          createdDate: data['createdDate'] ?? Timestamp.now(),
-                          updateDate: data['updateDate'],
-                        );
-
-                        //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここから
-                        return ListTile(
-                          title: Text(fetchMemo.title),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(fetchMemo.detail),
-                              Text(DateFormat('yyyy/MM/dd HH:mm')
-                                  .format(fetchMemo.createdDate.toDate()))
-                            ],
-                          ),
-                        );
-                        //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここまで
-                      }),
-                  // 📝 メモのセクションここまで
-
                   // 🏎 フリーのセクションここから
                   const Padding(
                     padding: EdgeInsets.only(left: 16.0, top: 50.0),
-                    child: Text('フリー｜precious',
+                    child: Text('フリー｜free',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold)),
                   ),
@@ -159,15 +120,34 @@ class _AllPageState extends State<AllPage> {
                         );
 
                         //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここから
-                        return ListTile(
-                          title: Text(fetchMemo.freeTitle),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(fetchMemo.freeContent),
-                              Text(DateFormat('yyyy/MM/dd HH:mm')
-                                  .format(fetchMemo.createdDate.toDate()))
-                            ],
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: ListTile(
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Text('タイトル',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                Text(fetchMemo.freeTitle),
+                                const SizedBox(height: 10),
+                                const Text('内容',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                Text(fetchMemo.freeContent),
+                                const SizedBox(height: 10),
+                                Text(
+                                  '日付：' + DateFormat('yyyy/MM/dd HH:mm').format(fetchMemo.createdDate.toDate()),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                         //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここまで
@@ -186,8 +166,8 @@ class _AllPageState extends State<AllPage> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: valueJournalDocs.length,
                       itemBuilder: (context, index) {
-                        Map<String, dynamic> data =
-                            valueJournalDocs[index].data() as Map<String, dynamic>;
+                        Map<String, dynamic> data = valueJournalDocs[index]
+                            .data() as Map<String, dynamic>;
 
                         final Value fetchMemo = Value(
                           // common
@@ -200,16 +180,40 @@ class _AllPageState extends State<AllPage> {
                         );
 
                         //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここから
-                        return ListTile(
-                          title: Text(fetchMemo.valueContent),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(fetchMemo.valueReason),
-                              Text(fetchMemo.valueSubject),
-                              Text(DateFormat('yyyy/MM/dd HH:mm')
-                                  .format(fetchMemo.createdDate.toDate()))
-                            ],
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: ListTile(
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Text('対象',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                Text(fetchMemo.valueSubject),
+                                const SizedBox(height: 10),
+                                const Text('大切にしたいこと',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                Text(fetchMemo.valueContent),
+                                const SizedBox(height: 10),
+                                const Text('その理由',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                Text(fetchMemo.valueReason),
+                                const SizedBox(height: 10),
+                                Text(
+                                  '日付：' + DateFormat('yyyy/MM/dd HH:mm').format(fetchMemo.createdDate.toDate()),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                         //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここまで
@@ -228,8 +232,8 @@ class _AllPageState extends State<AllPage> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: wordJournalDocs.length,
                       itemBuilder: (context, index) {
-                        Map<String, dynamic> data =
-                            wordJournalDocs[index].data() as Map<String, dynamic>;
+                        Map<String, dynamic> data = wordJournalDocs[index]
+                            .data() as Map<String, dynamic>;
 
                         final Word fetchMemo = Word(
                           // common
@@ -242,16 +246,40 @@ class _AllPageState extends State<AllPage> {
                         );
 
                         //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここから
-                        return ListTile(
-                          title: Text(fetchMemo.word),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(fetchMemo.wordReason),
-                              Text(fetchMemo.wordType),
-                              Text(DateFormat('yyyy/MM/dd HH:mm')
-                                  .format(fetchMemo.createdDate.toDate()))
-                            ],
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: ListTile(
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Text('印象に残った言葉',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                Text(fetchMemo.word),
+                                const SizedBox(height: 10),
+                                const Text('その理由',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                Text(fetchMemo.wordReason),
+                                const SizedBox(height: 10),
+                                const Text('自分にとってどんな言葉か',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                Text(fetchMemo.wordType),
+                                const SizedBox(height: 10),
+                                Text(
+                                  '日付：' + DateFormat('yyyy/MM/dd HH:mm').format(fetchMemo.createdDate.toDate()),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                         //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここまで
@@ -270,8 +298,8 @@ class _AllPageState extends State<AllPage> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: feelJournalDocs.length,
                       itemBuilder: (context, index) {
-                        Map<String, dynamic> data =
-                            feelJournalDocs[index].data() as Map<String, dynamic>;
+                        Map<String, dynamic> data = feelJournalDocs[index]
+                            .data() as Map<String, dynamic>;
 
                         final Feel fetchMemo = Feel(
                           // common
@@ -284,23 +312,44 @@ class _AllPageState extends State<AllPage> {
                         );
 
                         //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここから
-                        return ListTile(
-                          title: Text(fetchMemo.feelType),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(fetchMemo.feelReason),
-                              Text(fetchMemo.feelAdvice),
-                              Text(DateFormat('yyyy/MM/dd HH:mm')
-                                  .format(fetchMemo.createdDate.toDate()))
-                            ],
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: ListTile(
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Text('その時の感情',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                Text(fetchMemo.feelType),
+                                const SizedBox(height: 10),
+                                const Text('その感情になった理由',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                Text(fetchMemo.feelReason),
+                                const SizedBox(height: 10),
+                                const Text('未来の自分へのアドバイス',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                Text(fetchMemo.feelAdvice),
+                                const SizedBox(height: 10),
+                                Text(DateFormat('yyyy/MM/dd HH:mm')
+                                    .format(fetchMemo.createdDate.toDate()))
+                              ],
+                            ),
                           ),
                         );
                         //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここまで
                       }),
                   // 💚 感情のセクションここまで
-
-
                 ],
               ),
             );
@@ -315,10 +364,3 @@ class _AllPageState extends State<AllPage> {
   }
   //ジャーナル一覧画面の実装ここまで
 }
-
-
-// // value_journal
-                          // // ⭐後でそれぞれのデータを取得するように変更する
-                          // valueContent: data['valueContent'],
-                          // valueReason: data['valueReason'],
-                          // valueSubject: data['valueSubject'],
