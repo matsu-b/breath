@@ -1,14 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:test3_app/pages/create_account.dart';
-import 'package:test3_app/pages/home_page.dart';
+import 'package:test3_app/pages/login.dart';
 
-class LoginPage extends StatefulWidget {
+class CreateAccountPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _CreateAccountPageState createState() => _CreateAccountPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _CreateAccountPageState extends State<CreateAccountPage> {
   //入力されたメールアドレスを入れるデータ
   String newUserEmail = '';
   //入力されたパスワードを入れるデータ
@@ -21,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFFF2F2F2),
-        title: const Text('Login'),
+        title: const Text('Sign Up'),
         automaticallyImplyLeading: false, //戻るボタンを非表示にする
       ),
       body: Center(
@@ -54,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               //スペースを空ける
               const SizedBox(height: 8),
-              //このボタンを押すとfirebaseにユーザー情報でログインする
+              //このボタンを押すとfirebaseにユーザー情報が登録される
               ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(
@@ -62,33 +61,32 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 onPressed: () async {
                   try {
-                    // メール/パスワードでログイン
+                    // メール/パスワードでユーザー登録
                     final FirebaseAuth auth = FirebaseAuth.instance;
                     final UserCredential result =
-                        await auth.signInWithEmailAndPassword(
+                        await auth.createUserWithEmailAndPassword(
                       email: newUserEmail,
                       password: newUserPassword,
                     );
-
-                    // ログインしたユーザー情報
+                    // 登録したユーザー情報
                     final User user = result.user!;
                     setState(() {
-                      // infoText = "ログインOK：${user.email}";
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HomePage()),
+                      // infoText = "登録OK：${user.email}";
+                        Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LoginPage()),
                   );
                     });
                   } catch (e) {
-                    // ログインに失敗した場合
+                    // 登録に失敗した場合
                     setState(() {
-                      infoText = "ログインNG：${e.toString()}";
+                      infoText = "登録NG：${e.toString()}";
                     });
                   }
                 },
                 child: const Text(
-                  'Login',
+                  'Sign Up',
                   style: TextStyle(
                     color: Colors.white, // テキストの色を白に設定
                     fontWeight: FontWeight.bold,
@@ -106,11 +104,11 @@ class _LoginPageState extends State<LoginPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => CreateAccountPage()),
+                        builder: (context) => LoginPage()),
                   );
                 },
                 child: const Text(
-                  '新規登録はこちら',
+                  '既にアカウントをお持ちの方はこちら',
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,

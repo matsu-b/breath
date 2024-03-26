@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test3_app/main.dart';
 import 'package:test3_app/model/memo.dart';
@@ -40,6 +41,28 @@ class _AllPageState extends State<AllPage> {
     ]);
   }
 
+// ユーザーごとのデータを取得するための実装の下書きここから
+// @override
+// void initState() {
+//   super.initState();
+
+//   User? user = FirebaseAuth.instance.currentUser;
+//   String userId = user != null ? user.uid : '';
+
+//   freeJournalCollection = FirebaseFirestore.instance.collection('free_journals').where('userId', isEqualTo: userId);
+//   valueJournalCollection = FirebaseFirestore.instance.collection('value_journals').where('userId', isEqualTo: userId);
+//   wordJournalCollection = FirebaseFirestore.instance.collection('word_journals').where('userId', isEqualTo: userId);
+//   feelJournalCollection = FirebaseFirestore.instance.collection('feel_journals').where('userId', isEqualTo: userId);
+
+//   combinedStream = StreamZip<QuerySnapshot>([
+//     freeJournalCollection.snapshots(),
+//     valueJournalCollection.snapshots(),
+//     wordJournalCollection.snapshots(),
+//     feelJournalCollection.snapshots(),
+//   ]);
+// }
+// ユーザーごとのデータを取得するための実装の下書きここまで
+
   //ナビゲーションを表示させるための実装ここから
   int _selectedIndex = 1;
 
@@ -54,6 +77,9 @@ class _AllPageState extends State<AllPage> {
           break;
         case 1:
           Navigator.pushNamed(context, '/journey');
+          break;
+        case 2:
+          Navigator.pushNamed(context, '/account');
           break;
       }
     }
@@ -72,6 +98,7 @@ class _AllPageState extends State<AllPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        automaticallyImplyLeading: false, //戻るボタンを非表示にする
       ),
       body: Container(
         color: Color(0xFFF2F2F2), // 背景色を設定
@@ -144,7 +171,9 @@ class _AllPageState extends State<AllPage> {
                                 Text(fetchMemo.freeContent),
                                 const SizedBox(height: 10),
                                 Text(
-                                  '日付：' + DateFormat('yyyy/MM/dd HH:mm').format(fetchMemo.createdDate.toDate()),
+                                  '日付：' +
+                                      DateFormat('yyyy/MM/dd HH:mm').format(
+                                          fetchMemo.createdDate.toDate()),
                                 ),
                               ],
                             ),
@@ -210,7 +239,9 @@ class _AllPageState extends State<AllPage> {
                                 Text(fetchMemo.valueReason),
                                 const SizedBox(height: 10),
                                 Text(
-                                  '日付：' + DateFormat('yyyy/MM/dd HH:mm').format(fetchMemo.createdDate.toDate()),
+                                  '日付：' +
+                                      DateFormat('yyyy/MM/dd HH:mm').format(
+                                          fetchMemo.createdDate.toDate()),
                                 ),
                               ],
                             ),
@@ -276,7 +307,9 @@ class _AllPageState extends State<AllPage> {
                                 Text(fetchMemo.wordType),
                                 const SizedBox(height: 10),
                                 Text(
-                                  '日付：' + DateFormat('yyyy/MM/dd HH:mm').format(fetchMemo.createdDate.toDate()),
+                                  '日付：' +
+                                      DateFormat('yyyy/MM/dd HH:mm').format(
+                                          fetchMemo.createdDate.toDate()),
                                 ),
                               ],
                             ),
