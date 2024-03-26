@@ -1,23 +1,38 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test3_app/firebase_options.dart';
+import 'package:test3_app/pages/accont_page.dart';
 import 'package:test3_app/pages/all_page.dart';
 import 'package:test3_app/pages/home_page.dart';
 import 'package:test3_app/pages/journals/feelings_journal.dart';
 import 'package:test3_app/pages/journals/free_journal.dart';
 import 'package:test3_app/pages/journals/value_journal.dart';
 import 'package:test3_app/pages/journals/words_journal.dart';
+import 'package:test3_app/pages/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  
+  // FirebaseAuthのインスタンスを取得
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+    // 現在のユーザーを取得
+  final User? currentUser = auth.currentUser;
+
+  // ユーザーがログインしているかどうかを確認
+  final Widget firstPage = currentUser != null ? HomePage() : LoginPage();
+  
+  runApp(MyApp(firstPage: firstPage));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+    final Widget firstPage;
+
+    MyApp({required this.firstPage});
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +42,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: firstPage,
       routes: {
         '/home': (context) => const HomePage(),
         '/journey': (context) => const AllPage(
               title: 'Allpage',
             ),
+        '/account': (context) => const AccountPage(),
         '/feelingjournal': (context) => const FeelingJournal(),
         '/wordsjournal': (context) => const WordsJournal(),
         '/valuejournal': (context) => const ValueJournal(),
@@ -62,6 +78,10 @@ class CustomNavigationBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.text_snippet),
           label: 'Journey',
+        ),
+                BottomNavigationBarItem(
+          icon: Icon(Icons.account_circle),
+          label: 'Account',
         ),
       ],
       currentIndex: selectedIndex,
