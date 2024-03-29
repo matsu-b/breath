@@ -16,23 +16,31 @@ class AllPage extends StatefulWidget {
 
 class _AllPageState extends State<AllPage> {
   late StreamZip<QuerySnapshot> combinedStream;
-  late CollectionReference freeJournalCollection;
-  late CollectionReference valueJournalCollection;
-  late CollectionReference wordJournalCollection;
-  late CollectionReference feelJournalCollection;
+  late Query<Map<String, dynamic>> freeJournalCollection;
+  late Query<Map<String, dynamic>> valueJournalCollection;
+  late Query<Map<String, dynamic>> wordJournalCollection;
+  late Query<Map<String, dynamic>> feelJournalCollection;
 
   @override
   void initState() {
     super.initState();
 
-    freeJournalCollection =
-        FirebaseFirestore.instance.collection('free_journals');
-    valueJournalCollection =
-        FirebaseFirestore.instance.collection('value_journals');
-    wordJournalCollection =
-        FirebaseFirestore.instance.collection('word_journals');
-    feelJournalCollection =
-        FirebaseFirestore.instance.collection('feel_journals');
+    User? user = FirebaseAuth.instance.currentUser;
+    String userId = user != null ? user.uid : '';
+
+    freeJournalCollection = FirebaseFirestore.instance
+        .collection('free_journals')
+        .where('userid', isEqualTo: userId);
+    valueJournalCollection = FirebaseFirestore.instance
+        .collection('value_journals')
+        .where('userid', isEqualTo: userId);
+    wordJournalCollection = FirebaseFirestore.instance
+        .collection('word_journals')
+        .where('userid', isEqualTo: userId);
+    feelJournalCollection = FirebaseFirestore.instance
+        .collection('feel_journals')
+        .where('userid', isEqualTo: userId);
+
     combinedStream = StreamZip<QuerySnapshot>([
       freeJournalCollection.snapshots(),
       valueJournalCollection.snapshots(),
@@ -40,28 +48,6 @@ class _AllPageState extends State<AllPage> {
       feelJournalCollection.snapshots(),
     ]);
   }
-
-// ユーザーごとのデータを取得するための実装の下書きここから
-// @override
-// void initState() {
-//   super.initState();
-
-//   User? user = FirebaseAuth.instance.currentUser;
-//   String userId = user != null ? user.uid : '';
-
-//   freeJournalCollection = FirebaseFirestore.instance.collection('free_journals').where('userId', isEqualTo: userId);
-//   valueJournalCollection = FirebaseFirestore.instance.collection('value_journals').where('userId', isEqualTo: userId);
-//   wordJournalCollection = FirebaseFirestore.instance.collection('word_journals').where('userId', isEqualTo: userId);
-//   feelJournalCollection = FirebaseFirestore.instance.collection('feel_journals').where('userId', isEqualTo: userId);
-
-//   combinedStream = StreamZip<QuerySnapshot>([
-//     freeJournalCollection.snapshots(),
-//     valueJournalCollection.snapshots(),
-//     wordJournalCollection.snapshots(),
-//     feelJournalCollection.snapshots(),
-//   ]);
-// }
-// ユーザーごとのデータを取得するための実装の下書きここまで
 
   //ナビゲーションを表示させるための実装ここから
   int _selectedIndex = 1;
@@ -90,6 +76,7 @@ class _AllPageState extends State<AllPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF2F2F2), 
       appBar: AppBar(
         backgroundColor: Color(0xFFF2F2F2),
         title: const Text(
@@ -100,24 +87,28 @@ class _AllPageState extends State<AllPage> {
         ),
         automaticallyImplyLeading: false, //戻るボタンを非表示にする
       ),
-      body: Container(
-        color: Color(0xFFF2F2F2), // 背景色を設定
-        child: StreamBuilder<List<QuerySnapshot>>(
-          stream: combinedStream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-            if (!snapshot.hasData) {
-              return const Center(child: Text('データがありません'));
-            }
+      body: StreamBuilder<List<QuerySnapshot>>(
+        stream: combinedStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
 
-            final freeJournalDocs = snapshot.data![0].docs;
-            final valueJournalDocs = snapshot.data![1].docs;
-            final wordJournalDocs = snapshot.data![2].docs;
-            final feelJournalDocs = snapshot.data![3].docs;
+          if (!snapshot.hasData) {
+            return Container(
+              color: Color(0xFFF2F2F2), // 背景色を設定
+              child: const Center(child: Text('データがありません')),
+            );
+          }
 
-            return SingleChildScrollView(
+          // 各セクションのドキュメントを取得
+          final freeJournalDocs = snapshot.data![0].docs;
+          final valueJournalDocs = snapshot.data![1].docs;
+          final wordJournalDocs = snapshot.data![2].docs;
+          final feelJournalDocs = snapshot.data![3].docs;
+
+          return Container(
+            child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,6 +131,7 @@ class _AllPageState extends State<AllPage> {
                         final Free fetchMemo = Free(
                           // common
                           id: freeJournalDocs[index].id,
+                          userid: data['userid'],
                           freeTitle: data['freeTitle'],
                           freeContent: data['freeContent'],
                           createdDate: data['createdDate'] ?? Timestamp.now(),
@@ -206,6 +198,7 @@ class _AllPageState extends State<AllPage> {
                           valueSubject: data['valueSubject'],
                           createdDate: data['createdDate'] ?? Timestamp.now(),
                           updateDate: data['updateDate'],
+                          userid: data['userid'],
                         );
 
                         //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここから
@@ -274,6 +267,7 @@ class _AllPageState extends State<AllPage> {
                           wordType: data['wordType'],
                           createdDate: data['createdDate'] ?? Timestamp.now(),
                           updateDate: data['updateDate'],
+                          userid: data['userid'],
                         );
 
                         //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここから
@@ -342,6 +336,7 @@ class _AllPageState extends State<AllPage> {
                           feelAdvice: data['feelAdvice'],
                           createdDate: data['createdDate'] ?? Timestamp.now(),
                           updateDate: data['updateDate'],
+                          userid: data['userid'],
                         );
 
                         //メモのタイトルを一覧で表示＆編集画面への遷移を実装ここから
@@ -385,15 +380,14 @@ class _AllPageState extends State<AllPage> {
                   // 💚 感情のセクションここまで
                 ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
       bottomNavigationBar: CustomNavigationBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),
     );
-  }
-  //ジャーナル一覧画面の実装ここまで
+  } //ジャーナル一覧画面の実装ここまで
 }
