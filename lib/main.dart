@@ -20,7 +20,7 @@ void main() async {
   // FirebaseAuthのインスタンスを取得
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-    // 現在のユーザーを取得
+  // 現在のユーザーを取得
   final User? currentUser = auth.currentUser;
 
   // ユーザーがログインしているかどうかを確認
